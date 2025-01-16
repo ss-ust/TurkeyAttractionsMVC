@@ -1,0 +1,49 @@
+﻿@model IEnumerable<TurkeyAttractionsMVC.Models.City>
+
+@{
+    ViewData["Title"] = "Admin - Cities";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container mt-4">
+    <h2 class="text-center">Manage Cities</h2>
+
+    <a asp-action="Create" class="btn btn-primary mb-3">Create New City</a>
+
+    @if (!Model.Any())
+    {
+        <p>No cities available.</p>
+    }
+    else
+    {
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Latitude</th>
+                    <th>Longitude</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var city in Model)
+                {
+                    <tr>
+                        <td>@city.ID</td>
+                        <td>@city.Name</td>
+                        <td>@city.Lat</td>
+                        <td>@city.Lng</td>
+                        <td>
+                            <a asp-action="Details" asp-route-id="@city.ID" class="btn btn-info btn-sm">Details</a>
+                            <a asp-action="Edit" asp-route-id="@city.ID" class="btn btn-warning btn-sm">Edit</a>
+                            <form asp-action="Delete" asp-route-id="@city.ID" method="post" class="d-inline">
+                                <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+</div>

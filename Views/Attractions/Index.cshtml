@@ -1,0 +1,60 @@
+﻿@model IEnumerable<TurkeyAttractionsMVC.Models.Attraction>
+@{
+    ViewBag.Title = "Attractions";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<h2>Attractions</h2>
+
+<form asp-action="Index" method="get">
+    <div class="form-group">
+        <label for="citySelect">Select a City:</label>
+        <select id="citySelect" name="cityId" class="form-control" onchange="this.form.submit()">
+            @Html.Raw(ViewBag.CityOptions)
+        </select>
+    </div>
+</form>
+
+@if (!Model.Any())
+{
+    <p>No attractions available for this city.</p>
+    <li><a href="@Url.Action("Create", "Attractions")" class="btn btn-primary">Create a New Attraction</a></li>
+}
+else
+{
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Lat</th>
+                <th>Lng</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var attraction in Model)
+            {
+                <tr>
+                    <td>@attraction.Name</td>
+                    <td>@attraction.Lat</td>
+                    <td>@attraction.Lng</td>
+                    <td>
+                        <a asp-action="Details" asp-route-id="@attraction.ID" class="btn btn-info">Details</a>
+                        @if (User.IsInRole("admin"))
+                        {
+                            <a asp-action="Edit" asp-route-id="@attraction.ID" class="btn btn-warning">Edit</a>
+                            <form asp-action="Delete" asp-controller="Attractions" method="post" class="d-inline">
+                                <input type="hidden" name="id" value="@attraction.ID" />
+                                <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                            </form>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+        <li><a href="@Url.Action("Create", "Attractions")" class="btn btn-primary">Create a New Attraction</a></li>
+    </table>
+}
+@if (User.IsInRole("admin") && ViewBag.CityId != null)
+{
+    <a asp-action="Create" asp-route-cityId="@ViewBag.CityId" class="btn btn-primary">Create New Attraction</a>
+}

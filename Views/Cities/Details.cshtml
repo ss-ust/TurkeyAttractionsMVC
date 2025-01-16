@@ -1,0 +1,88 @@
+﻿@model TurkeyAttractionsMVC.Models.City
+
+@{
+    ViewData["Title"] = Model.Name;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1 class="text-center">@Model.Name</h1>
+<!-- If city has a description, you can display it below -->
+<!-- Google Map Section -->
+<div id="map" style="height: 600px; width: 100%; margin-bottom: 20px;"></div>
+
+<h2 class="text-center">Attractions</h2>
+<div class="row justify-content-center">
+    @foreach (var attraction in Model.Attractions)
+    {
+        <button class="attraction-button"
+                style="background-image: url('@(!string.IsNullOrEmpty(attraction.ImageUrl) ? attraction.ImageUrl : Url.Content("~/assets/img/default.jpg"))');" onclick="navigateToAttraction('@Url.Action("Details", "Attractions", new { id = attraction.ID })')">
+            @attraction.Name
+        </button>
+    }
+</div>
+
+@section Scripts {
+    <!-- Google Maps JavaScript API (ensure you have a valid key) -->
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDaCQDTgrnb1o2XfDAj7p9z_DvdLcaZ6BU"></script>
+    <script>
+        let map;
+        const cityLat = @Model.Lat.ToString(System.Globalization.CultureInfo.InvariantCulture);
+        const cityLng = @Model.Lng.ToString(System.Globalization.CultureInfo.InvariantCulture);
+
+        function initMap() {
+            map = new google.maps.Map(document.getElementById("map"), {
+                zoom: 10,
+                center: { lat: parseFloat(cityLat), lng: parseFloat(cityLng) }
+            });
+
+            const attractions = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(
+            Model.Attractions.Select(a => new { a.Name, a.Lat, a.Lng })
+            ));
+
+            attractions.forEach(attraction => {
+                const marker = new google.maps.Marker({
+                    position: { lat: attraction.Lat, lng: attraction.Lng },
+                    map: map,
+                    title: attraction.Name
+                });
+
+                marker.addListener("click", () => {
+                    map.setCenter({ lat: attraction.Lat, lng: attraction.Lng });
+                    map.setZoom(14);
+                });
+            });
+        }
+
+        function navigateToAttraction(url) {
+            window.location.href = url;
+        }
+
+        window.onload = initMap;
+    </script>
+
+    <style>
+        .attraction-button {
+            width: 300px;
+            height: 300px;
+            margin: 10px;
+            background-size: cover;
+            background-position: center;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            color: #fff;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-shadow: 1px 1px 0px black, -1px -1px 0px black, -1px 1px 0px black, 1px -1px 0px black;
+            -webkit-text-stroke: 0.5px black;
+            font-size: 32px;
+            transition: transform 0.2s ease;
+        }
+
+            .attraction-button:hover {
+                transform: scale(1.1);
+            }
+    </style>
+}

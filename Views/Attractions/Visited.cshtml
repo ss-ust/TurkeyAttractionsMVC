@@ -1,0 +1,37 @@
+﻿@model IEnumerable<TurkeyAttractionsMVC.Models.Attraction>
+
+@{
+    ViewData["Title"] = "Visited Attractions";
+}
+
+<div class="container my-4">
+    <h1 class="text-center mb-4">@ViewData["Title"]</h1>
+
+    @if (!Model.Any())
+    {
+        <p class="text-center">You haven't visited any attractions yet!</p>
+    }
+    else
+    {
+        <div class="row">
+            @foreach (var attraction in Model)
+            {
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100">
+                        <div class="card-img-top"
+                             style="background-image: url('@(string.IsNullOrEmpty(attraction.ImageUrl) ? Url.Content("~/assets/img/default.jpg") : attraction.ImageUrl)');
+                                    background-size: cover;
+                                    background-position: center;
+                                    height: 200px;">
+                        </div>
+                        <div class="card-body">
+                            <h5 class="card-title">@attraction.Name</h5>
+                            <p class="card-text">@attraction.Description</p>
+                            <a href="@Url.Action("Details", "Attractions", new { id = attraction.ID })" class="btn btn-primary">View Details</a>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>

@@ -1,0 +1,66 @@
+﻿@model IEnumerable<TurkeyAttractionsMVC.Models.Comment>
+@{
+    ViewBag.Title = "Comments";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Comments</h2>
+
+<form asp-action="Index" method="get">
+    <div class="form-group">
+        <label for="attractionSelect">Select an Attraction:</label>
+        <select id="attractionSelect" name="attractionId" class="form-control" onchange="this.form.submit()">
+            @Html.Raw(ViewBag.AttractionOptions)
+        </select>
+    </div>
+</form>
+
+@if (!Model.Any())
+{
+    <p>No comments available for this attraction.</p>
+}
+else
+{
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>User</th>
+                <th>Comment</th>
+                <th>Created At</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var comment in Model)
+            {
+                <tr>
+                    <td>@comment.User?.UserName</td>
+                    <td>@comment.Text</td>
+                    <td>
+                        @if (User.IsInRole("admin") || User.Identity.Name == comment.User?.UserName)
+                        {
+                            <a asp-action="Edit" asp-route-id="@comment.ID" class="btn btn-warning">Edit</a>
+                            <form asp-action="Delete" asp-controller="Comments" method="post" class="d-inline">
+                                <input type="hidden" name="id" value="@comment.ID" />
+                                <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                            </form>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@if (User.Identity.IsAuthenticated && ViewBag.AttractionId != null)
+{
+    <h3>Add a New Comment</h3>
+    <form asp-action="Create" method="post" class="mb-4">
+        <input type="hidden" name="attractionId" value="@ViewBag.AttractionId" />
+        <div class="form-group mb-2">
+            <label for="commentText">Your Comment:</label>
+            <textarea id="commentText" name="text" class="form-control" rows="3"></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+}

@@ -1,0 +1,43 @@
+﻿@model TurkeyAttractionsMVC.Models.Attraction
+
+@{
+    ViewBag.Title = "Edit Attraction";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Edit Attraction</h2>
+
+<form asp-action="Edit" method="post">
+    <div class="form-group mb-3">
+        <label for="Name">Name</label>
+        <input asp-for="Name" id="Name" class="form-control" />
+        <span asp-validation-for="Name" class="text-danger"></span>
+    </div>
+
+    <div class="form-group mb-3">
+        <label for="Lat">Latitude</label>
+        <input asp-for="Lat" id="Lat" class="form-control" />
+        <span asp-validation-for="Lat" class="text-danger"></span>
+    </div>
+
+    <div class="form-group mb-3">
+        <label for="Lng">Longitude</label>
+        <input asp-for="Lng" id="Lng" class="form-control" />
+        <span asp-validation-for="Lng" class="text-danger"></span>
+    </div>
+
+    <div class="form-group mb-3">
+        <label for="Description">Description</label>
+        <textarea asp-for="Description" id="Description" class="form-control"></textarea>
+        <span asp-validation-for="Description" class="text-danger"></span>
+    </div>
+
+    <div class="form-group mb-3">
+        <label for="ImageUrl">Image URL</label>
+        <input asp-for="ImageUrl" id="ImageUrl" class="form-control" />
+        <span asp-validation-for="ImageUrl" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Save Changes</button>
+    <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+</form>

@@ -1,0 +1,127 @@
+﻿@model TurkeyAttractionsMVC.Models.Attraction
+
+@{
+    ViewBag.Title = Model.Name;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css">
+    <style>
+        .attraction-image {
+            width: 100%;
+            height: 400px;
+            background-size: cover;
+            background-position: center;
+            border-radius: 20px;
+        }
+
+        .comment {
+            margin-bottom: 20px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+        }
+
+            .comment strong {
+                font-size: 1.1em;
+            }
+    </style>
+</head>
+<body>
+    <div class="container my-4">
+        <h1 class="text-center mb-4">@Model.Name</h1>
+
+        <div class="attraction-image mb-4"
+             style="background-image: url('@(string.IsNullOrEmpty(Model.ImageUrl) ? Url.Content("~/assets/img/default.jpg") : Model.ImageUrl)');">
+        </div>
+
+        <div class="row">
+            <div class="col-md-8">
+                <h3>Description</h3>
+                <p>@Model.Description</p>
+
+                @if (User.Identity.IsAuthenticated)
+                {
+                    <form asp-action="ToggleVisited" method="post" class="d-inline">
+                        <input type="hidden" name="attractionId" value="@Model.ID" />
+                        <button type="submit" class="btn btn-success mb-3">
+                            @(ViewBag.Visited == true ? "Mark as Not Visited" : "Mark as Visited")
+                        </button>
+                    </form>
+                }
+
+                <h3>Comments</h3>
+                @if (User.Identity.IsAuthenticated)
+                {
+                    <form asp-action="Create" asp-controller="Comments" method="post" class="mb-4">
+                        <input type="hidden" name="attractionId" value="@Model.ID" />
+                        <div class="form-group mb-2">
+                            <label for="commentText">Add a comment:</label>
+                            <textarea id="commentText" name="text" class="form-control" rows="3"></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Comment</button>
+                    </form>
+                }
+
+                @if (Model.Comments.Any())
+                {
+                    @foreach (var comment in Model.Comments)
+                    {
+                        <div class="comment">
+                            <strong>@comment.User?.UserName</strong>
+                            <p>@comment.Text</p>
+
+                            @if (User.IsInRole("admin") || User.Identity.Name == comment.User?.UserName)
+                            {
+                                <a asp-controller="Comments" asp-action="Edit" asp-route-id="@comment.ID" class="btn btn-sm btn-warning">Edit</a>
+                                <form asp-action="DeleteConfirmed" asp-controller="Comments" method="post" class="d-inline">
+                                    <input type="hidden" name="id" value="@comment.ID" />
+                                    <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                                </form>
+                            }
+                        </div>
+                    }
+                }
+                else
+                {
+                    <p>No comments yet. Be the first to comment!</p>
+                }
+            </div>
+            <div class="col-md-4">
+                <h3>Location</h3>
+                <div id="map" style="height: 300px; border: 1px solid #ccc; border-radius: 10px;"></div>
+            </div>
+        </div>
+    </div>
+
+    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDaCQDTgrnb1o2XfDAj7p9z_DvdLcaZ6BU"></script>
+    <script>
+        function initMap() {
+            const attractionLocation = {
+                lat: parseFloat("@Model.Lat.ToString(System.Globalization.CultureInfo.InvariantCulture)"),
+                lng: parseFloat("@Model.Lng.ToString(System.Globalization.CultureInfo.InvariantCulture)")
+            };
+
+            const map = new google.maps.Map(document.getElementById("map"), {
+                center: attractionLocation,
+                zoom: 12
+            });
+
+            new google.maps.Marker({
+                position: attractionLocation,
+                map: map,
+                title: "@Model.Name"
+            });
+        }
+
+        window.onload = initMap;
+    </script>
+</body>
+</html>

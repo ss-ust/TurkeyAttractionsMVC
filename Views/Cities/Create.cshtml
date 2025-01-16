@@ -1,0 +1,78 @@
+﻿@model TurkeyAttractionsMVC.Models.City
+
+@{
+    ViewBag.Title = "Create City";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Create City</h2>
+
+<form asp-action="Create" method="post">
+    <div class="form-group mb-3">
+        <label>Name</label>
+        <input asp-for="Name" class="form-control" />
+        <span asp-validation-for="Name" class="text-danger"></span>
+    </div>
+
+    <div class="form-group mb-3">
+        <label>Image URL</label>
+        <input asp-for="ImageUrl" class="form-control" placeholder="https://example.com/image.jpg" />
+        <span asp-validation-for="ImageUrl" class="text-danger"></span>
+    </div>
+
+    <!-- Hidden fields for Lat/Lng -->
+    <input type="hidden" asp-for="Lat" id="Lat" />
+    <input type="hidden" asp-for="Lng" id="Lng" />
+
+    <div class="mb-3">
+        <p>Select the city location on the map:</p>
+        <div id="map" style="height:400px; width:100%; border:1px solid #ccc;"></div>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Save</button>
+    <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+</form>
+
+@section Scripts {
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDaCQDTgrnb1o2XfDAj7p9z_DvdLcaZ6BU"></script>
+    <script>
+        let map;
+        let marker;
+
+        function initMap() {
+            // Center the map on Turkey (or any default location)
+            const defaultLocation = { lat: 39.0, lng: 35.0 };
+
+            map = new google.maps.Map(document.getElementById("map"), {
+                center: defaultLocation,
+                zoom: 6,
+            });
+
+            // Add a click listener to place marker and update hidden fields
+            map.addListener("click", (e) => {
+                placeMarker(e.latLng);
+            });
+        }
+
+        function placeMarker(location) {
+            if (marker) {
+                marker.setPosition(location);
+            } else {
+                marker = new google.maps.Marker({
+                    position: location,
+                    map: map
+                });
+            }
+
+            // Update hidden form fields with chosen location
+            let latStr = location.lat().toString().replace('.', ',');
+            let lngStr = location.lng().toString().replace('.', ',');
+
+            // Update hidden form fields with chosen location
+            document.getElementById("Lat").value = latStr;
+            document.getElementById("Lng").value = lngStr;
+        }
+
+        window.onload = initMap;
+    </script>
+}

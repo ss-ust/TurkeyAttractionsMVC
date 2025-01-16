@@ -1,0 +1,21 @@
+﻿@{
+    ViewBag.Title = "Admin Dashboard";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Admin Dashboard</h2>
+<p>Welcome, Admin!</p>
+
+<!-- Manage Cities -->
+<h3>Cities Management</h3>
+<div>
+    <a asp-controller="Cities" asp-action="AdminIndex" class="btn btn-primary">View/Edit/Delete All Cities</a>
+    <a asp-controller="Cities" asp-action="Create" class="btn btn-secondary">Create a New City</a>
+</div>
+
+<!-- Manage Attractions -->
+<h3>Attractions Management</h3>
+<div>
+    <a asp-controller="Attractions" asp-action="Index" class="btn btn-primary">View/Edit/Delete All Attractions</a>
+    <a asp-controller="Attractions" asp-action="Create" class="btn btn-secondary">Create a New Attraction</a>
+</div>
